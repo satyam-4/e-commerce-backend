@@ -22,18 +22,19 @@ enum OrderStatus {
 }
 
 model User {
-  id             Int             @id @default(autoincrement())
-  fullName       String
-  email          String          @unique
-  password       String 
-  phone          String          @unique
-  address        String    
-  role           Role            @default(BUYER) 
-  refreshTokens  RefreshToken[] 
-  seller         Seller?
-  reviews        ProductReview[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  id              Int             @id @default(autoincrement())
+  fullName        String
+  email           String          @unique
+  password        String 
+  phone           String          @unique
+  address         String    
+  role            Role            @default(BUYER) 
+  refreshTokens   RefreshToken[] 
+  seller          Seller?
+  productReviews  ProductReview[]
+  sellerReviews   SellerReview[]
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   @@map("users")
 }
@@ -52,17 +53,18 @@ model RefreshToken {
 }
 
 model Seller {
-  id                 String   @id @default(uuid())
-  userId             Int      @unique
-  user               User     @relation(fields: [userId], references: [id])
-  sellerRating       Float    @default(0)
-  pickupAddress      String
-  businessName       String
-  gstNumber          String?
-  bankAccountNumber  Int?    
-  ifscCode           String?
-  bankName           String?      
-  sellerVariants  SellerVariant[]
+  id                   String   @id @default(uuid())
+  userId               Int      @unique
+  user                 User     @relation(fields: [userId], references: [id])
+  pickupAddress        String
+  businessName         String
+  gstNumber            String?
+  bankAccountNumber    Int?    
+  ifscCode             String?
+  bankName             String?      
+  sellerVariants       SellerVariant[]
+  reviews              SellerReview[]
+  reviewSummary        SellerReviewSummary?
 
   @@map("sellers")
 }
@@ -158,4 +160,30 @@ model ProductReviewSummary {
   updatedAt         DateTime        @default(now())  @updatedAt
 
   @@map("product_review_summaries")
+}
+
+model SellerReview {
+  id         Int       @id @default(autoincrement())
+  sellerId   String
+  seller     Seller    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  userId     Int
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating     Float
+  review     String?
+  createdAt  DateTime  @default(now())
+
+  @@unique([sellerId, userId])
+  @@map("seller_reviews")
+}
+
+model SellerReviewSummary {
+  id               Int       @id @default(autoincrement())
+  sellerId         String    @unique
+  seller           Seller    @relation(fields: [sellerId], references: [id])
+  averageRating    Float     @default(0)
+  totalReviews     Int       @default(0)
+  ratingBreakdown  Json?     
+  updatedAt        DateTime  @default(now()) @updatedAt
+
+  @@map("seller_review_summaries")
 }
