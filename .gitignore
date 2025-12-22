@@ -3,4 +3,3 @@ pnpm-lock.yaml
 .env*
 !.env.example
 .prisma/
-*.sql
