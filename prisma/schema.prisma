@@ -29,7 +29,7 @@ model User {
   phone           String          @unique
   address         String    
   role            Role            @default(BUYER) 
-  refreshTokens   RefreshToken[] 
+  session         Session[] 
   seller          Seller?
   productReviews  ProductReview[]
   sellerReviews   SellerReview[]
@@ -39,17 +39,22 @@ model User {
   @@map("users")
 }
 
-model RefreshToken {
-  id         Int       @id @default(autoincrement())
-  token      String  
-  userId     Int       
-  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userAgent  String?
-  ip         String?
-  expiresAt  DateTime
-  createdAt  DateTime  @default(now())
+model Session {
+  id            String    @id @default(cuid())
+  sessionToken  String    @unique
+  userId        Int    
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  ipAddress     String?
+  userAgent     String?
+  expiresAt     DateTime
+  absoluteExp   DateTime
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now()) @updatedAt
 
-  @@map("refresh_tokens")
+  @@index([userId])
+  @@index([expiresAt])
+
+  @@map("sessions")
 }
 
 model Seller {
