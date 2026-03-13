@@ -1,5 +1,5 @@
 import express from "express";
-import authRoutes from "./src/modules/auth/auth.route.js";
+import authRoutes from "./src/modules/auth/route.js";
 import userRoutes from "./src/modules/users/user.route.js";
 import productRoutes from "./src/modules/product/product.route.js";
 import cartRoutes from "./src/modules/cart/cart.route.js";

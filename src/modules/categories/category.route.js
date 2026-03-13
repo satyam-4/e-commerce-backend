@@ -16,7 +16,7 @@ import {
     deleteCategoryValidator,
     createSubcategoryValidator,
 } from "./category.validator.js";
-import { verifyJWT } from "#middlewares/auth.middleware.js";
+import { requireAuth } from "#middlewares/auth.middleware.js";
 import { checkRole } from "#middlewares/role.middleware.js";
 import { validate } from "#middlewares/validate.middleware.js";
 
@@ -24,7 +24,7 @@ const router = express.Router();
 
 router.route("/").get(getAllCategories);
 router.route("/:categoryId").get(
-    verifyJWT, 
+    requireAuth, 
     getCategoryByIdValidator, 
     validate, 
     getCategoryById
@@ -35,28 +35,28 @@ router.route("/:categoryId/subcategory").get(
     getSubcategoriesByCategoryId
 );
 router.route("/:categoryId/subcategory").post(
-    verifyJWT, 
+    requireAuth, 
     checkRole(["SELLER", "ADMIN"]),
     createSubcategoryValidator,
     validate,
     createSubcategoryByCategoryId,
 );
 router.route("/").post(
-    verifyJWT,
+    requireAuth,
     checkRole(["ADMIN", "SELLER"]), 
     createCategoryValidator,
     validate,
     createCategory
 );
 router.route("/:categoryId").put(
-    verifyJWT,
+    requireAuth,
     checkRole(["ADMIN", "SELLER"]), 
     updateCategoryValidator,
     validate,
     updateCategory
 );
 router.route("/:categoryId").delete(
-    verifyJWT,
+    requireAuth,
     checkRole(["ADMIN", "SELLER"]), 
     deleteCategoryValidator,
     validate,
