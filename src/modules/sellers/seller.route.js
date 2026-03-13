@@ -1,5 +1,5 @@
 import express from "express";
-import { verifyJWT } from "#middlewares/auth.middleware.js";
+import { requireAuth } from "#middlewares/auth.middleware.js";
 import { checkRole } from "#middlewares/role.middleware.js";
 import {
     createSellerVariantValidator,
@@ -19,33 +19,33 @@ import {
 const router = express.Router();
 
 router.route("/seller-variant").post(
-    verifyJWT,
+    requireAuth,
     checkRole(["SELLER"]),
     createSellerVariantValidator,
     validate,
     createSellerVariant
 );
 router.route("/seller-variant").get(
-    verifyJWT,
+    requireAuth,
     checkRole(["SELLER"]),
     getAllSellerVariant
 );
 router.route("/seller-variant/:sellerVariantId").get(
-    verifyJWT,
+    requireAuth,
     checkRole(["SELLER"]),
     getSellerVariantByIdValidator,
     validate,
     getSellerVariantByID
 );
 router.route("/seller-variant/:sellerVariantId").put(
-    verifyJWT,
+    requireAuth,
     checkRole(["SELLER"]),
     updateSellerVariantByIdValidator,
     validate,
     updateSellerVariantById
 );
 router.route("/seller-variant/:sellerVariantId").delete(
-    verifyJWT,
+    requireAuth,
     checkRole(["SELLER"]),
     deleteSellerVariantByIdValidator,
     validate,

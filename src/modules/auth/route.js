@@ -1,6 +1,6 @@
 import express from "express";
-import { signinUser, signupUser } from "./auth.controller.js";
-import { sigininValidator, signupValidator } from "./auth.validator.js";
+import { signinUser, signupUser } from "./controller.js";
+import { sigininValidator, signupValidator } from "./validator.js";
 import { validate } from "#middlewares/validate.middleware.js";
 
 const router = express.Router();

@@ -12,7 +12,7 @@ import {
     getSubcategoryByIdValidator,
     updateSubcategoryValidator,
 } from "./subcategories.validator.js";
-import { verifyJWT } from "#middlewares/auth.middleware.js";
+import { requireAuth } from "#middlewares/auth.middleware.js";
 import { checkRole } from "#middlewares/role.middleware.js";
 import { validate } from "#middlewares/validate.middleware.js";
 
@@ -20,26 +20,26 @@ const router = express.Router();
 
 router.route("/").get(getAllSubcategories);
 router.route("/:subcategoryId").get(
-    verifyJWT,
+    requireAuth,
     getSubcategoryByIdValidator,
     validate,
     getSubcategoryById
 );
 router.route("/:subcategoryId/products").get(
-    verifyJWT,
+    requireAuth,
     getProductsBySubcategoryIdValidator,
     validate,
     getProductsBySubcategoryId
 );
 router.route("/:subcategoryId").put(
-    verifyJWT,
+    requireAuth,
     checkRole(["ADMIN", "SELLER"]),
     updateSubcategoryValidator,
     validate,
     updateSubcategory
 );
 router.route("/:subcategoryId").delete(
-    verifyJWT,
+    requireAuth,
     checkRole(["ADMIN", "SELLER"]),
     deleteSubcategoryValidator,
     validate,
