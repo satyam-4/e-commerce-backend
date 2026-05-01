@@ -1,5 +1,5 @@
 import { AppError } from "#utils/AppError.js";
-import { createNewSeller } from "./user.db.js";
+import { createNewSeller } from "./repository.js";
 
 const becomeSeller = async (req, res) => {
     const userId = req.user.id;

@@ -1,6 +1,6 @@
 import express from "express";
-import { AddToCart, RemoveFromCart } from "./cart.controller.js";
-import { addToCartValidator, removeFromCartValidator } from "./cart.validator.js";
+import { AddToCart, RemoveFromCart } from "./controller.js";
+import { addToCartValidator, removeFromCartValidator } from "./validator.js";
 import { validate } from "#middlewares/validate.middleware.js";
 import { requireAuth } from "#middlewares/auth.middleware.js";
 

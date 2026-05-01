@@ -1,4 +1,4 @@
-import { addProductToCart, removeProductFromCart } from "./cart.db.js";
+import { addProductToCart, removeProductFromCart } from "./repository.js";
 
 const AddToCart = async (req, res) => {
     const userId = req.user.id;

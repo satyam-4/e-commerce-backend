@@ -1,11 +1,11 @@
 import express from "express";
 import authRoutes from "./src/modules/auth/route.js";
-import userRoutes from "./src/modules/users/user.route.js";
-import productRoutes from "./src/modules/product/product.route.js";
-import cartRoutes from "./src/modules/cart/cart.route.js";
-import categoryRoutes from "./src/modules/categories/category.route.js";
-import subcategoryRoutes from "./src/modules/subcategories/subcategories.route.js";
-import sellerRoutes from "./src/modules/sellers/seller.route.js";
+import userRoutes from "./src/modules/users/route.js";
+import productRoutes from "./src/modules/product/route.js";
+import cartRoutes from "./src/modules/cart/route.js";
+import categoryRoutes from "./src/modules/categories/route.js";
+import subcategoryRoutes from "./src/modules/subcategories/route.js";
+import sellerRoutes from "./src/modules/sellers/route.js";
 import productReviewRoutes from "./src/modules/productReview/route.js";
 import sellerReviewRoutes from "./src/modules/sellerReview/route.js";
 import { errorHandler } from "./src/middlewares/errorHandler.middleware.js";

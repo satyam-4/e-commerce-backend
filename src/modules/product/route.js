@@ -7,7 +7,7 @@ import {
     getProducts, 
     getProductsById, 
     updateProduct 
-} from "./product.controller.js";
+} from "./controller.js";
 import { 
     createProductValidator, 
     getProductByIdValidator, 
@@ -15,7 +15,7 @@ import {
     deleteProductValidator, 
     createProductVariantValidator, 
     deleteProductVariantValidator} 
-from "./product.validator.js";
+from "./validator.js";
 import { validate } from "#middlewares/validate.middleware.js";
 import { requireAuth } from "#middlewares/auth.middleware.js";
 import { checkRole } from "#middlewares/role.middleware.js";

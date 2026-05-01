@@ -1,6 +1,6 @@
 import { AppError } from "#utils/AppError.js";
-import { upsertSellerReview, upsertSellerReviewSummary } from "./db.js";
-import { sellerVariantRepository } from "../sellers/seller.db.js";
+import { upsertSellerReview, upsertSellerReviewSummary } from "./repository.js";
+import { sellerVariantRepository } from "../sellers/repository.js";
 
 const createOrUpdateSellerReview = async (req, res) => {
     try {

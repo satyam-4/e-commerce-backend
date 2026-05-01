@@ -1,6 +1,6 @@
 import { AppError } from "#utils/AppError.js";
 import prisma from "../../prisma/client.js";
-import { queryBuilder } from "./product.service.js";
+import { queryBuilder } from "./service.js";
 
 export const addProducts = async (name, description, subcategoryId) => {
     try {

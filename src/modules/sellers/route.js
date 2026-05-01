@@ -6,7 +6,7 @@ import {
     getSellerVariantByIdValidator,
     updateSellerVariantByIdValidator,
     deleteSellerVariantByIdValidator,
-} from "./seller.validator.js"
+} from "./validator.js"
 import { validate } from "#middlewares/validate.middleware.js";
 import { 
     createSellerVariant,
@@ -14,7 +14,7 @@ import {
     getAllSellerVariant,
     getSellerVariantByID,
     updateSellerVariantById,
-} from "./seller.controller.js";
+} from "./controller.js";
 
 const router = express.Router();
 
