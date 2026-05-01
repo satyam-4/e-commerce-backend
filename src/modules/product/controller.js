@@ -7,7 +7,7 @@ import {
     findProducts, 
     getProductById, 
     updateProductById 
-} from "./product.db.js";
+} from "./repository.js";
 
 const getProducts = async (req, res) => {
     const filters = req.query;

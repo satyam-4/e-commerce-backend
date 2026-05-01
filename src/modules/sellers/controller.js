@@ -1,5 +1,5 @@
 import { AppError } from "#utils/AppError.js";
-import { sellerVariantRepository } from "./seller.db.js";
+import { sellerVariantRepository } from "./repository.js";
 
 const createSellerVariant = async (req, res) => {
     const { ProductVariantId, price, stock } = req.body;

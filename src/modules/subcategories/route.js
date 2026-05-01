@@ -5,13 +5,13 @@ import {
     getProductsBySubcategoryId, 
     getSubcategoryById, 
     updateSubcategory } 
-from "./subcategories.controller.js";
+from "./controller.js";
 import { 
     deleteSubcategoryValidator,
     getProductsBySubcategoryIdValidator,
     getSubcategoryByIdValidator,
     updateSubcategoryValidator,
-} from "./subcategories.validator.js";
+} from "./validator.js";
 import { requireAuth } from "#middlewares/auth.middleware.js";
 import { checkRole } from "#middlewares/role.middleware.js";
 import { validate } from "#middlewares/validate.middleware.js";

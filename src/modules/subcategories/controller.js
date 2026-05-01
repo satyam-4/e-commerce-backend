@@ -5,7 +5,7 @@ import {
     findProductsBySubcategoryId, 
     findSubcategoryById, 
     updateSubcategoryById,
-} from "./subcategories.db.js"
+} from "./repository.js"
 
 const getAllSubcategories = async (req, res) => {
     const subcategories = await findAllSubcategories();

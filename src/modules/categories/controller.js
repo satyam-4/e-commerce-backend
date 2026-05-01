@@ -7,7 +7,7 @@ import {
     findCategoryById, 
     findsubcategoriesByCategoryId, 
     updateCategoryById
-} from "./category.db.js";
+} from "./repository.js";
 import slugify from "slugify";
 
 const getAllCategories = async (req, res) => {

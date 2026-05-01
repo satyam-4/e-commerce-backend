@@ -7,7 +7,7 @@ import {
     updateCategory,
     deleteCategory,
     createSubcategoryByCategoryId,
-} from "./category.controller.js";
+} from "./controller.js";
 import { 
     getCategoryByIdValidator, 
     getSubcategoriesByCategoryIdValidator,
@@ -15,7 +15,7 @@ import {
     updateCategoryValidator, 
     deleteCategoryValidator,
     createSubcategoryValidator,
-} from "./category.validator.js";
+} from "./validator.js";
 import { requireAuth } from "#middlewares/auth.middleware.js";
 import { checkRole } from "#middlewares/role.middleware.js";
 import { validate } from "#middlewares/validate.middleware.js";
