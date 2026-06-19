@@ -1,66 +1,109 @@
 import { AppError } from "#utils/AppError.js";
 import prisma from "../../prisma/client.js"
 
-export const addProductToCart = async (productId, quantity, userId) => {
+const addSellerVariantToCart = async (sellerVariantId, quantity, userId) => {
     try {
-        const product = await prisma.product.findFirst({
-            where: { id: productId }
+        const sellerVariant = await prisma.sellerVariant.findFirst({
+            where: { id: sellerVariantId }
         })
         
-        if(!product) {
-            throw new AppError(404, "Product not found");
+        if(!sellerVariant) {
+            throw new AppError(404, "Seller variant not found");
         }
 
-        const cart = await prisma.cart.upsert({
-            where: { userId: userId },
-            update: {},
-            create: { userId: userId }
-        });
+        if (sellerVariant?.stock <= 0) {
+            throw new AppError(400, "Product currently out of stock in this seller variant")
+        }
 
-        const cartItem = await prisma.cartitem.create({
-            data: {
-                cartId: cart.id,
-                productId: productId,
-                quantity: quantity
+        if (sellerVariant?.stock < quantity) {
+            throw new AppError(400, `Only ${sellerVariant?.stock} units are available`);
+        }
+
+        const cartItem = await prisma.cart.upsert({
+            where: {
+                userId_sellerVariantId: { userId, sellerVariantId }
+            },
+            update: {
+                quantity: { increment: quantity }
+            },
+            create: {
+                sellerVariantId,
+                quantity, 
+                userId
             }
         });
 
         return cartItem;
+
     } catch (error) {
-        if(error instanceof AppError) {
-            throw error;
-        }
-        throw new AppError(500, "Error while adding product to cart");
+        console.error("REAL ERROR:", error);
+        if(error instanceof AppError) throw error;
+        throw new AppError(500, "Error while adding to cart");
     }
 }
 
-export const removeProductFromCart = async (userId, productId) => {
+const removeSellerVariantFromCart = async (userId, cartId) => {
     try {
-        const cart = await prisma.cart.findUnique({
-            where: { userId: userId }
+        const cart = await prisma.cart.findFirst({
+            where: { 
+                id: cartId,
+                userId: userId 
+            }
         });
 
         if(!cart) {
             throw new AppError(404, "Cart not found");
         }
 
-        const cartId = cart.id;
+        const deletedCartItem = await prisma.cart.delete({
+            where: { id: cartId }
+        });
 
-        const cartItem = await prisma.cartitem.delete({
-            where: {
-                cartId_productId: {
-                    cartId: cartId,
-                    productId: productId
+        return deletedCartItem;
+    } catch (error) {
+        if(error instanceof AppError) throw error;
+        throw new AppError(500, "Error while removing cart item")
+    }
+}
+
+const getAllCartItemsByUser = async (userId) => {
+    try {
+        const cartItems = await prisma.cart.findMany({
+            where: { userId },
+            select: {
+                id: true,
+                quantity: true,
+                sellerVariant: {
+                    select: {
+                        id: true,
+                        price: true,
+                        stock: true,
+                        seller: {
+                            select: { businessName: true }
+                        },
+                        productVariant: {
+                            select: {
+                                sku: true,
+                                attributes: true,
+                                product: {
+                                    select: { name: true, description: true }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         });
 
-        return cartItem;
+        return cartItems;
     } catch (error) {
-        if(error instanceof AppError) {
-            throw error;
-        }
-        console.log("yo error aayo:", error)
-        throw new AppError(500, "Error while removing product from cart")
+        if(error instanceof AppError) throw error;
+        throw new AppError(500, "Error while fetching all carts")
     }
+}
+
+export {
+    addSellerVariantToCart,
+    removeSellerVariantFromCart,
+    getAllCartItemsByUser,
 }

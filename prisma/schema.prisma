@@ -33,6 +33,7 @@ model User {
   seller          Seller?
   productReviews  ProductReview[]
   sellerReviews   SellerReview[]
+  carts           Cart[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
@@ -72,6 +73,22 @@ model Seller {
   reviewSummary        SellerReviewSummary?
 
   @@map("sellers")
+}
+
+model Cart {
+  id                Int             @id @default(autoincrement())
+  userId            Int             
+  user              User            @relation(fields: [userId], references: [id])
+  sellerVariantId   Int             
+  sellerVariant     SellerVariant   @relation(fields: [sellerVariantId], references: [id])
+  quantity          Int             @default(1)
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@unique([userId, sellerVariantId])
+  @@index([userId])
+
+  @@map("carts")
 }
 
 model Category {
@@ -135,6 +152,7 @@ model SellerVariant {
   price             Float  
   stock             Int
   createdAt         DateTime         @default(now())
+  carts             Cart[]
 
   @@unique([productVariantId, sellerId])
   @@map("seller_variants")
@@ -192,3 +210,4 @@ model SellerReviewSummary {
 
   @@map("seller_review_summaries")
 }
+

@@ -1,9 +1,9 @@
 import { body, param } from "express-validator";
 
 export const addToCartValidator = [
-    body("productId")
-        .notEmpty().withMessage("Product ID is required").bail()
-        .isInt({ gt: 0 }).withMessage("Product ID must be a positive integer").bail()
+    body("sellerVariantId")
+        .notEmpty().withMessage("Seller Variant ID is required").bail()
+        .isInt({ gt: 0 }).withMessage("Seller Variant ID must be a positive integer").bail()
         .toInt(),
 
     body("quantity")
@@ -13,7 +13,7 @@ export const addToCartValidator = [
 ];
 
 export const removeFromCartValidator = [
-    param("id")
-        .isInt({ gt: 0 }).withMessage("Product ID must be a positive integer")
+    param("cartId")
+        .isInt({ gt: 0 }).withMessage("Cart ID must be a positive integer")
         .toInt(),
 ];

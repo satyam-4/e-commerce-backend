@@ -36,4 +36,5 @@ app.use("/api/v1/product-reviews", productReviewRoutes);
 app.use("/api/v1/seller-reviews", sellerReviewRoutes);
 
 app.use(errorHandler);
+
 export { app };
