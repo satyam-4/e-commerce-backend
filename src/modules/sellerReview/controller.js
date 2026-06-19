@@ -9,7 +9,7 @@ const createOrUpdateSellerReview = async (req, res) => {
 
         const seller = await sellerVariantRepository.findSellerByUserId(user.id);
 
-        if (seller && (seller.id === sellerId)) {
+        if (seller && (seller?.id === sellerId)) {
             throw new AppError(403, "You cannot review yourself");
         }
 
