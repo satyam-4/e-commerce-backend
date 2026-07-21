@@ -34,7 +34,6 @@ model User {
   productReviews  ProductReview[]
   sellerReviews   SellerReview[]
   carts           Cart[]
-  orders          Order[]
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
 
@@ -71,7 +70,6 @@ model Seller {
   bankName             String?      
   sellerVariants       SellerVariant[]
   reviews              SellerReview[]
-  subOrders            SubOrder[]
   reviewSummary        SellerReviewSummary?
 
   @@map("sellers")
@@ -155,7 +153,6 @@ model SellerVariant {
   stock             Int
   createdAt         DateTime         @default(now())
   carts             Cart[]
-  orderItems        OrderItem[] 
 
   @@unique([productVariantId, sellerId])
   @@map("seller_variants")
@@ -214,47 +211,3 @@ model SellerReviewSummary {
   @@map("seller_review_summaries")
 }
 
-model Order {
-  id           Int         @id @default(autoincrement())
-  userId       Int
-  user         User        @relation(fields: [userId], references: [id])
-  totalAmount  Float
-  status       OrderStatus @default(PENDING)
-  subOrders    SubOrder[]
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
-
-  @@index([userId])
-  @@map("orders")
-}
-
-model SubOrder {
-  id         Int         @id @default(autoincrement())
-  orderId    Int
-  order      Order       @relation(fields: [orderId], references: [id])
-  sellerId   String
-  seller     Seller      @relation(fields: [sellerId], references: [id])
-  status     OrderStatus @default(PENDING)
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-
-  items      OrderItem[]
-
-  @@index([orderId])
-  @@index([sellerId])
-  @@map("sub_orders")
-}
-
-model OrderItem {
-  id                Int           @id @default(autoincrement())
-  subOrderId        Int
-  subOrder          SubOrder      @relation(fields: [subOrderId], references: [id])
-  sellerVariantId   Int
-  sellerVariant     SellerVariant @relation(fields: [sellerVariantId], references: [id])
-  quantity          Int
-  priceAtPurchase   Float
-  createdAt         DateTime      @default(now())
-
-  @@index([subOrderId])
-  @@map("order_items")
-}
