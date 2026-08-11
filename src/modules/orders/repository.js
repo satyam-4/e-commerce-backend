@@ -130,7 +130,8 @@ const getOrdersByUser = async (userId) => {
                                     }
                                 }
                             },
-                            priceAtPurchase: true
+                            priceAtPurchase: true,
+                            quantity: true
                         }
                     }
                 }
@@ -171,7 +172,8 @@ const getOrdersById = async (orderId, userId) => {
                                     }
                                 }
                             },
-                            priceAtPurchase: true
+                            priceAtPurchase: true,
+                            quantity: true
                         }
                     }
                 }
@@ -325,57 +327,6 @@ const cancelOrderTransaction = async (order) => {
     });
 };
 
-// const cancelOrderById = async (orderId, userId) => {
-//     return await prisma.$transaction(async (tx) => {
-//         const order = await tx.order.findFirst({
-//             where: { id: orderId, userId },
-//             select: {
-//                 status: true,
-//                 subOrders: {
-//                     select: {
-//                         id: true,
-//                         status: true,
-//                         items: {
-//                             select: {
-//                                 id: true,
-//                                 sellerVariantId: true,
-//                                 quantity: true
-//                             }
-//                         }
-//                     }
-//                 }
-//             }
-//         });
-
-//         const statuses = order.subOrders.map(s => s.status);
-
-//         if (!statuses.every(s => s === "PENDING")) {
-//             throw new AppError(400, "Can't cancel the order at this stage");
-//         }
-
-//         // cancel all the suborders of this order
-//         await tx.subOrder.updateMany({
-//             where: { orderId },
-//             data: { status: "CANCELLED" }
-//         })
-
-//         // restore the quantity of sellerVariants for all cancelled suborders
-//         for (const subOrders of order.subOrders) {
-//             for (const orderItems of subOrders.items) {
-//                 await tx.sellerVariant.update({
-//                     where: { id: orderItems.sellerVariantId },
-//                     data: { stock: { increment: orderItems.quantity } }
-//                 });
-//             }
-//         }
-
-//         // cancel the parent order
-//         await tx.order.update({
-//             where: { id: orderId, userId },
-//             data: { status: "CANCELLED" }
-//         });
-//     });
-// };
 
 export {
     getCartItemsForCheckout,

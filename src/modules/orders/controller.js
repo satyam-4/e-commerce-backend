@@ -171,8 +171,8 @@ const handleCancelOrder = async (req, res) => {
     try {
         const { id: userId } = req.user;
         const { orderId } = req.params;
-
-        const result = await cancelOrder(orderId, userId);
+        
+        const result = await cancelOrder(parseInt(orderId), userId);
 
         res.status(200).json({
             success: true,
@@ -186,6 +186,8 @@ const handleCancelOrder = async (req, res) => {
                 message: error.message
             });
         }
+
+        console.log("Error:", error);
 
         res.status(500).json({
             success: false,
