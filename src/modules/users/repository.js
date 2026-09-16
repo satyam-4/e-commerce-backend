@@ -1,28 +1,24 @@
-import { AppError } from "#utils/AppError.js";
 import prisma from "../../prisma/client.js"
 
 export const createNewSeller = async (userId, pickupAddress, businessName, gstNumber, bankAccountNumber, ifscCode, bankName) => {
-    try {
-        await prisma.user.update({
+    return await prisma.$transaction(async (tx) => {
+        await tx.user.update({
             where: { id: userId },
             data: { role: "SELLER" }
-        }); 
+        });
 
-        const seller = await prisma.seller.create({
+        const seller = await tx.seller.create({
             data: {
-                userId: userId,
-                pickupAddress: pickupAddress,
-                businessName: businessName,
-                gstNumber: gstNumber,
-                bankAccountNumber: bankAccountNumber,
-                ifscCode: ifscCode,
-                bankName: bankName
+                userId,
+                pickupAddress,
+                businessName,
+                gstNumber,
+                bankAccountNumber,
+                ifscCode,
+                bankName
             }
         });
 
         return seller;
-    } catch (error) {
-        console.error("Prisma error:", error);
-        throw new AppError(500, "Error while creating new seller")
-    }
+    });
 }
