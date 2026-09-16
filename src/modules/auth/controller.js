@@ -57,7 +57,7 @@ const signinUser = async (req, res) => {
     .status(200)
     .cookie("sid", hashedToken, {
         httpOnly: true,
-        maxAge: SESSION_ABSOLUTE_MAX_AGE
+        maxAge: ABSOLUTE_MS
     })
     .json({
         success: true,
