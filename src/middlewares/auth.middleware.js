@@ -1,5 +1,6 @@
 import { AppError } from "#utils/AppError.js";
 import { destroySessionToken, getSessionToken, getUserByEmail, getUserById, refreshSessionExpiry } from "#modules/auth/repository.js";
+import { SESSION_COOKIE_OPTIONS } from "#modules/auth/controller.js";
 
 // 7 days
 const SLIDING_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000
@@ -15,17 +16,20 @@ export const requireAuth = async (req, res, next) => {
         const session = await getSessionToken(sessionToken);
 
         if (!session) {
+            res.clearCookie("sid", SESSION_COOKIE_OPTIONS);
             throw new AppError(401, "Invalid or expired session");
         }
 
         const now = new Date();
         if (session.absoluteExp && (now > session.absoluteExp)) {
             await destroySessionToken(sessionToken);
+            res.clearCookie("sid", SESSION_COOKIE_OPTIONS);
             throw new AppError(401, "Session expired");
         }
 
         if (session.expiresAt && (now > session.expiresAt)) {
             await destroySessionToken(sessionToken);
+            res.clearCookie("sid", SESSION_COOKIE_OPTIONS);
             throw new AppError(401, "Session expired");
         }
 

@@ -1,4 +1,4 @@
-import { checkUserExistence, createNewUser, getUserByEmail, storeSessionToken } from "./repository.js";
+import { checkUserExistence, createNewUser, destroySessionToken, getUserByEmail, storeSessionToken } from "./repository.js";
 import { encryptPassword, generateSessionToken, hashToken, verifyPassword } from "./service.js";
 import { AppError } from "#utils/AppError.js";
 import { sanitizeUser } from "./serializer.js";
@@ -7,6 +7,12 @@ const { SESSION_MAX_AGE, SESSION_ABSOLUTE_MAX_AGE } = process.env;
 
 const SLIDING_MS = parseInt(SESSION_MAX_AGE || "604800000");
 const ABSOLUTE_MS = parseInt(SESSION_ABSOLUTE_MAX_AGE || "2592000000");
+
+export const SESSION_COOKIE_OPTIONS = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax"
+};
 
 const signupUser = async (req, res) => {
     const { fullName, email, password, phone, address } = req.body;
@@ -56,7 +62,7 @@ const signinUser = async (req, res) => {
     return res 
     .status(200)
     .cookie("sid", hashedToken, {
-        httpOnly: true,
+        ...SESSION_COOKIE_OPTIONS,
         maxAge: ABSOLUTE_MS
     })
     .json({
@@ -66,7 +72,24 @@ const signinUser = async (req, res) => {
     });
 };
 
+const signoutUser = () => {
+    const sessionToken = req.cookies?.sid;
+
+    if (sessionToken) {
+        destroySessionToken(sessionToken);
+    }
+
+    return res
+    .status(200)
+    .clearCookie("sid", SESSION_ABSOLUTE_MAX_AGE)
+    .json({
+        success: true,
+        message: "User logged out successfully"
+    });
+};
+
 export {
     signinUser,
-    signupUser
+    signupUser,
+    signoutUser
 };
