@@ -1,9 +1,12 @@
+import { logger } from "../config/logger";
+
 export const errorHandler = (err, req, res, next) => {
-    console.log("Error handler middleware");
     const statusCode = err?.statusCode || 500;
 
-    console.log("code:", statusCode);
-    console.log("error obj:", err);
+    logger.error(
+        { err, statusCode, method: req.method, path: req.originalUrl },
+        "Request error"
+    );
 
     if (process.env.NODE_ENV === "development") {
         return res
