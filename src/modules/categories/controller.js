@@ -38,28 +38,23 @@ const getCategoryById = async (req, res) => {
     });
 };
 
-const getSubcategoriesByCategoryId = async (req, res, next) => {
-    try {
-        const { categoryId } = req.params;
-        const category = await findCategoryById(categoryId);
-
-        if(!category) {
-            throw new AppError(404, "Category not found");
-        }
-
-        const subcategories = await findsubcategoriesByCategoryId(categoryId);
-        
-        return res
-        .status(200)
-        .json({
-            success: true,
-            message: "Fetched subcategories of category successfully",
-            data: subcategories
-        });
-    } catch (error) {
-        console.error(error);
-        next(new AppError(500, "Failed to fetch subcategories"));
+const getSubcategoriesByCategoryId = async (req, res) => {
+    const { categoryId } = req.params;
+    const category = await findCategoryById(categoryId);
+ 
+    if(!category) {
+        throw new AppError(404, "Category not found");
     }
+ 
+    const subcategories = await findsubcategoriesByCategoryId(categoryId);
+ 
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: "Fetched subcategories of category successfully",
+        data: subcategories
+    });
 };
 
 const createSubcategoryByCategoryId = async (req, res) => {
