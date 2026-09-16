@@ -1,6 +1,7 @@
 import { checkUserExistence, createNewUser, getUserByEmail, storeSessionToken } from "./repository.js";
 import { encryptPassword, generateSessionToken, hashToken, verifyPassword } from "./service.js";
 import { AppError } from "#utils/AppError.js";
+import { sanitizeUser } from "./serializer.js";
 
 const { SESSION_MAX_AGE, SESSION_ABSOLUTE_MAX_AGE } = process.env;
 
@@ -21,7 +22,7 @@ const signupUser = async (req, res) => {
     .status(201)
     .json({
         success: true,
-        user,
+        user: sanitizeUser(user),
         message: "User created successfully"
     });
 };
@@ -61,7 +62,7 @@ const signinUser = async (req, res) => {
     .json({
         success: true,
         message: "User logged in successfully",
-        data: user
+        user: sanitizeUser(user)
     });
 };
 

@@ -31,6 +31,9 @@ const getUserByEmail = async (email) => {
         const user = await prisma.user.findUnique({
             where: {
                 email
+            },
+            omit: {
+                password: false
             }
         });
         return user;
