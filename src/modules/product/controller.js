@@ -55,10 +55,9 @@ const createProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
     const { id: productId } = req.params;
-    const userId = req.user.id;
     const dataToUpdate = req.body;
 
-    const updatedProduct = await updateProductById(productId, userId, dataToUpdate);
+    const updatedProduct = await updateProductById(productId, dataToUpdate);
 
     return res
     .status(200)
@@ -100,8 +99,6 @@ const createProductVariant = async (req, res) => {
 
 const deleteProductVariant = async (req, res) => {
     const { productId, productVariantId } = req.params;
-    
-    console.log(productId, variantId)
 
     const deletedProductVariant = await destroyProductVariant(productId, productVariantId);
 

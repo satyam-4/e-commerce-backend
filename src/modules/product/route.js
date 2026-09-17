@@ -32,7 +32,7 @@ router.route("/").post(
 );
 router.route("/:productId").delete(
     requireAuth, 
-    checkRole(["SELLER", "ADMIN"]), 
+    checkRole(["ADMIN"]), 
     deleteProductValidator,
     validate,
     deleteProduct
@@ -46,7 +46,7 @@ router.route("/:productId/variants").post(
 );
 router.route("/:productId/variants/:productVariantId").delete(
     requireAuth,
-    checkRole(["SELLER", "ADMIN"]),
+    checkRole(["ADMIN"]),
     deleteProductVariantValidator,
     validate,
     deleteProductVariant
@@ -59,7 +59,7 @@ router.route("/:id").get(
 );
 router.route("/:id").patch(
     requireAuth, 
-    checkRole(["SELLER", "ADMIN"]), 
+    checkRole(["ADMIN"]), 
     updateProductValidator, 
     validate, 
     updateProduct
