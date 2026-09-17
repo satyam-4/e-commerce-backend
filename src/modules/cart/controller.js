@@ -31,21 +31,16 @@ const RemoveFromCart = async (req, res) => {
 };
 
 const getCart = async (req, res, next) => {
-    try {
-        const userId = req.user.id;
-        const cart = await getCartService(userId)
+    const userId = req.user.id;
+    const cart = await getCartService(userId)
 
-        return res
-        .status(200)
-        .json({
-            success: true,
-            message: cart.itemCount === 0 ? "Your cart is empty" : "Cart fetched successfully",
-            data: cart
-        });
-
-    } catch (error) {
-        next(error);
-    }
+    return res
+    .status(200)
+    .json({
+        success: true,
+        message: cart.itemCount === 0 ? "Your cart is empty" : "Cart fetched successfully",
+        data: cart
+    });
 };
 
 export {
