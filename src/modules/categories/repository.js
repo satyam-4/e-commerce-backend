@@ -23,17 +23,6 @@ export const findsubcategoriesByCategoryId = async (categoryId) => {
 };
 
 export const addSubcategory = async (subcategoryData) => {
-    const existingSubcategory = await prisma.subcategory.findUnique({
-        where: {
-            name: subcategoryData.name,
-            slug: subcategoryData.slug
-        }
-    });
-
-    if(existingSubcategory) {
-        throw new AppError(404, "Subcategory already exists");
-    }
-    
     const subcategory = await prisma.subcategory.create({
         data: subcategoryData
     });
