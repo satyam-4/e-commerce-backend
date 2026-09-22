@@ -2,115 +2,84 @@ import { AppError } from "#utils/AppError.js";
 import prisma from "../../prisma/client.js"
 
 async function findSellerByUserId(userId) {
-    try {
-        const seller = await prisma.seller.findUnique({
-            where: { userId: userId }
-        });
+    const seller = await prisma.seller.findUnique({
+        where: { userId: userId }
+    });
 
-        return seller;
-    } catch (error) {
-        console.log("error:", error)
-        throw new AppError(500, "Internal server error while finding seller");
-    }
-}
+    return seller;
+};
 
-async function getProductVariantByProductVariantId(ProductVariantId) {
-    try {
-        const ProductVariant = await prisma.ProductVariant.findUnique({
-            where: { id: ProductVariantId }
-        });
+async function getProductVariantByProductVariantId(productVariantId) {
+    const productVariant = await prisma.productVariant.findUnique({
+        where: { id: productVariant }
+    });
 
-        return ProductVariant;
-    } catch (error) {
-        throw new AppError(500, "Internal server error while fetching product variant");
-    }
-}
+    return productVariant;
+};
 
 async function findSellerVariantByProductVariantIdAndSellerId(ProductVariantId, sellerId) {
-    try {
-        const sellerVariant = await prisma.sellerVariant.findUnique({
-            where: {
-                productVariantId_sellerId: {
-                    productVariantId: ProductVariantId,
-                    sellerId: sellerId
-                }
+    const sellerVariant = await prisma.sellerVariant.findUnique({
+        where: {
+            productVariantId_sellerId: {
+                productVariantId: ProductVariantId,
+                sellerId: sellerId
             }
-        });
+        }
+    });
 
-        return sellerVariant;
-    } catch (error) {
-        console.log("err:", error)
-        throw new AppError(500, "Internal server error while finding seller variant")        ;
-    }
-}
+    return sellerVariant;
+};
 
 async function addSellerVariant(productVariantId, sellerId, price, stock) {
-    try {
-        const sellerVariant = await prisma.sellerVariant.create({
-            data: {
-                sellerId: sellerId,
-                productVariantId: productVariantId,
-                price: price,
-                stock: stock
-            }
-        });
+    const sellerVariant = await prisma.sellerVariant.create({
+        data: {
+            sellerId: sellerId,
+            productVariantId: productVariantId,
+            price: price,
+            stock: stock
+        }
+    });
 
-        return sellerVariant;
-    } catch (error) {
-        throw new AppError(500, "Internal server error while adding seller variant");
-    }
-}   
+    return sellerVariant;
+};
 
 async function findSellerVariantsBySellerId(sellerId) {
-    try {
-        const sellerVariants = await prisma.sellerVariant.findMany({
-            where: { sellerId: sellerId }
-        });
+    const sellerVariants = await prisma.sellerVariant.findMany({
+        where: { sellerId: sellerId }
+    });
 
-        return sellerVariants;
-    } catch (error) {
-        throw new AppError(500, "Internal server error while finding seller variants");
-    }
-}
+    return sellerVariants;
+};
 
-async function findSellerVariantBySellerVariantId(sellerVariantId) {
-    try {
-        const sellerVariant = await prisma.sellerVariant.findUnique({
-            where: { id: sellerVariantId }
-        });
+async function findSellerVariantBySellerVariantId(sellerVariantId, sellerId) {
+    const sellerVariant = await prisma.sellerVariant.findUnique({
+        where: { 
+            id: sellerVariantId,
+            sellerId
+        }
+    });
 
-        return sellerVariant;
-    } catch (error) {
-        throw new AppError(500, "Internal server error while finding seller variant");
-    }
-}
+    return sellerVariant;
+};
 
-async function updateSellerVariant(sellerVariantId, updateData) {
-    try {
-        const updatedSellerVariant = await prisma.sellerVariant.update({
-            where: { id: sellerVariantId },
-            data: updateData
-        });
+async function updateSellerVariant(sellerId, sellerVariantId, updateData) {
+    const updatedSellerVariant = await prisma.sellerVariant.update({
+        where: { id: sellerVariantId, sellerId },
+        data: updateData
+    });
 
-        return updatedSellerVariant;
-    } catch (error) {
-        throw new AppError(500, "Internal server error while updating seller variant");
-    }
-}
+    return updatedSellerVariant;
+};
 
-async function deletedSellerVariant(sellerVariantId) {
-    try {
-        const deletedSellerVariant = await prisma.sellerVariant.delete({
-            where: { id: sellerVariantId }
-        });
+async function deleteSellerVariant(sellerVariantId, sellerId) {
+    const deletedSellerVariant = await prisma.sellerVariant.delete({
+        where: { id: sellerVariantId, sellerId }
+    });
 
-        return deletedSellerVariant;
-    } catch (error) {
-        throw new AppError(500, "Internal server error while deleting seller variant");
-    }
-}
+    return deletedSellerVariant;
+};
 
-export const sellerVariantRepository = {
+export {
     findSellerByUserId,
     getProductVariantByProductVariantId,
     findSellerVariantByProductVariantIdAndSellerId,
@@ -118,5 +87,5 @@ export const sellerVariantRepository = {
     findSellerVariantsBySellerId,
     findSellerVariantBySellerVariantId,
     updateSellerVariant,
-    deletedSellerVariant,
-}
+    deleteSellerVariant,
+};
