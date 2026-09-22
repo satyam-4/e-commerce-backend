@@ -51,7 +51,7 @@ export const updateSellerVariantByIdValidator = [
             });
 
             if(Object.keys(req.body).length === 0) {
-                throw new Error(400, "At least one field must be provided");
+                throw new Error("At least one field must be provided");
             }
 
             return true;
