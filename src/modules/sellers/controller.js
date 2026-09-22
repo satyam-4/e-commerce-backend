@@ -1,30 +1,32 @@
 import { AppError } from "#utils/AppError.js";
-import { sellerVariantRepository } from "./repository.js";
+import {     
+    findSellerByUserId,
+    getProductVariantByProductVariantId,
+    findSellerVariantByProductVariantIdAndSellerId,
+    addSellerVariant,
+    findSellerVariantsBySellerId,
+    findSellerVariantBySellerVariantId,
+    updateSellerVariant,
+    deleteSellerVariant 
+} from "./repository.js";
 
 const createSellerVariant = async (req, res) => {
-    const { ProductVariantId, price, stock } = req.body;
+    const { productVariantId, price, stock } = req.body;
+    const { id: sellerId } = req.user?.seller;
 
-    let { id: userId } = req.user;
-
-    const seller = await sellerVariantRepository.findSellerByUserId(userId);
-
-    if(!seller) {
-        throw new AppError(404, "Seller not found")
-    }
-
-    const productVariant = await sellerVariantRepository.getProductVariantByProductVariantId(ProductVariantId);
+    const productVariant = await getProductVariantByProductVariantId(productVariantId);
 
     if(!productVariant) {
         throw new AppError(404, "Product variant not found");
     }
     
-    const doesSellerVariantExist = await sellerVariantRepository.findSellerVariantByProductVariantIdAndSellerId(ProductVariantId, seller.id);
+    const doesSellerVariantExist = await findSellerVariantByProductVariantIdAndSellerId(ProductVariantId, sellerId);
 
     if(doesSellerVariantExist) {
         throw new AppError(400, "Seller variant for that product variant already exist");
     }
 
-    const sellerVariant = await sellerVariantRepository.addSellerVariant(ProductVariantId, seller.id, price, stock);
+    const sellerVariant = await addSellerVariant(ProductVariantId, sellerId, price, stock);
 
     return res
     .status(201)
@@ -36,15 +38,9 @@ const createSellerVariant = async (req, res) => {
 };
 
 const getAllSellerVariant = async (req, res) => {
-    const { id: userId } = req.user;
+    const { id: sellerId } = req.user?.seller;
 
-    const seller = await sellerVariantRepository.findSellerByUserId(userId);
-
-    if(!seller) {
-        throw new AppError(404, "Seller not found")
-    }
-
-    const sellerVariants = await sellerVariantRepository.findSellerVariantsBySellerId(seller.id)
+    const sellerVariants = await findSellerVariantsBySellerId(sellerId)
 
     return res
     .status(200)
@@ -57,15 +53,9 @@ const getAllSellerVariant = async (req, res) => {
 
 const getSellerVariantByID = async (req, res) => {
     const { sellerVariantId } = req.params;
-    const { id: userId } = req.user;
+    const { id: sellerId } = req.user?.seller;
 
-    const seller = await sellerVariantRepository.findSellerByUserId(userId);
-
-    if(!seller) {
-        throw new AppError(404, "Seller not found")
-    }
-
-    const sellerVariant = await sellerVariantRepository.findSellerVariantBySellerVariantId(sellerVariantId);
+    const sellerVariant = await findSellerVariantBySellerVariantId(sellerVariantId, sellerId);
 
     if(!sellerVariant) {
         throw new AppError(404, "Seller variant not found");
@@ -82,22 +72,16 @@ const getSellerVariantByID = async (req, res) => {
 
 const updateSellerVariantById = async (req, res) => {
     const { sellerVariantId } = req.params;
-    const { id: userId } = req.user;
+    const { id: sellerId } = req.user?.seller;
     const updateData = req.body;
 
-    const seller = await sellerVariantRepository.findSellerByUserId(userId);
-
-    if(!seller) {
-        throw new AppError(404, "Seller not found")
-    }
-
-    const sellerVariant = await sellerVariantRepository.findSellerVariantBySellerVariantId(sellerVariantId);
+    const sellerVariant = await findSellerVariantBySellerVariantId(sellerVariantId, sellerId);
 
     if(!sellerVariant) {
         throw new AppError(404, "Seller variant not found");
     }
 
-    const updatedSellerVariant = await sellerVariantRepository.updateSellerVariant(sellerVariantId, updateData);
+    const updatedSellerVariant = await updateSellerVariant(sellerId, sellerVariantId, updateData);
 
     return res
     .status(200)
@@ -110,21 +94,15 @@ const updateSellerVariantById = async (req, res) => {
 
 const deleteSellerVariantById = async (req, res) => {
     const { sellerVariantId } = req.params;
-    const { id: userId } = req.user;
+    const { id: sellerId } = req.user?.seller;
 
-    const seller = await sellerVariantRepository.findSellerByUserId(userId);
-
-    if(!seller) {
-        throw new AppError(404, "Seller not found")
-    }
-
-    const sellerVariant = await sellerVariantRepository.findSellerVariantBySellerVariantId(sellerVariantId);
+    const sellerVariant = await findSellerVariantBySellerVariantId(sellerVariantId, sellerId);
 
     if(!sellerVariant) {
         throw new AppError(404, "Seller variant not found");
     }
 
-    const deletedSellerVariant = await sellerVariantRepository.deletedSellerVariant(sellerVariantId);
+    const deletedSellerVariant = await deleteSellerVariant(sellerVariantId, sellerId);
 
     return res
     .status(200)
