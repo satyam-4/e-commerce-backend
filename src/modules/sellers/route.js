@@ -15,12 +15,14 @@ import {
     getSellerVariantByID,
     updateSellerVariantById,
 } from "./controller.js";
+import { attachSeller } from "#middlewares/attachSeller.middleware.js";
 
 const router = express.Router();
 
 router.route("/seller-variant").post(
     requireAuth,
     checkRole(["SELLER"]),
+    attachSeller,
     createSellerVariantValidator,
     validate,
     createSellerVariant
@@ -28,11 +30,13 @@ router.route("/seller-variant").post(
 router.route("/seller-variant").get(
     requireAuth,
     checkRole(["SELLER"]),
+    attachSeller,
     getAllSellerVariant
 );
 router.route("/seller-variant/:sellerVariantId").get(
     requireAuth,
     checkRole(["SELLER"]),
+    attachSeller,
     getSellerVariantByIdValidator,
     validate,
     getSellerVariantByID
@@ -40,6 +44,7 @@ router.route("/seller-variant/:sellerVariantId").get(
 router.route("/seller-variant/:sellerVariantId").put(
     requireAuth,
     checkRole(["SELLER"]),
+    attachSeller,
     updateSellerVariantByIdValidator,
     validate,
     updateSellerVariantById
@@ -47,6 +52,7 @@ router.route("/seller-variant/:sellerVariantId").put(
 router.route("/seller-variant/:sellerVariantId").delete(
     requireAuth,
     checkRole(["SELLER"]),
+    attachSeller,
     deleteSellerVariantByIdValidator,
     validate,
     deleteSellerVariantById
