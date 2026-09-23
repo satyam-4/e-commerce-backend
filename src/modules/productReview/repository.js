@@ -1,53 +1,57 @@
 import { AppError } from "#utils/AppError.js";
 import prisma from "../../prisma/client.js";
 
-const upsertProductReview = async (userId, productVariantId, rating, review) => {
-    try {
-        const result = await prisma.productReview.upsert({
+const upsertProductReviewAndSummary = async (userId, productVariantId, rating, review) => {
+    return await prisma.$transaction(async (tx) => {
+        const result = await tx.productReview.upsert({
             where: { userId_productVariantId: { userId, productVariantId } },
             update: { rating, review },
             create: { userId, productVariantId, rating, review }
         });
 
-        const stats = await prisma.productReview.aggregate({
+        const stats = await tx.productReview.aggregate({
             where: { productVariantId },
             _avg: { rating: true },
             _count: true
         });
 
-        const breakdown = await prisma.productReview.groupBy({
+        const breakdown = await tx.productReview.groupBy({
             by: ['rating'],
             where: { productVariantId },
             _count: true
         });
 
-        return { result, stats, breakdown };
-    } catch (error) {
-        console.log("Prisma error:", error);
-        throw new AppError(500, "Error while updating product review");
-    }
-};
+        const initialBreakdown = {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0,
+            "5": 0,
+        };
+        
+        const ratingBreakdown = breakdown.reduce((acc, item) => {
+            const rating = Math.round(item.rating);
+            if (rating >= 0 && rating <= 5) acc[rating] += item._count;
+            return acc;
+        }, initialBreakdown)
 
-const upsertProductReviewSummary = async (productVariantId, stats, breakdown) => {
-    try {
-        await prisma.productReviewSummary.upsert({
+        await tx.productReviewSummary.upsert({
             where: { productVariantId },
             update: {
                 averageRating: stats._avg.rating || 0,
                 totalReviews: stats._count,
-                ratingBreakdown: breakdown
+                ratingBreakdown
             },
             create: {
                 productVariantId,
                 averageRating: stats._avg.rating || 0,
                 totalReviews: stats._count,
-                ratingBreakdown: breakdown
+                ratingBreakdown
             }
         });
-    } catch (error) {
-        console.log("Prisma error:", error);
-        throw new AppError(500, "Error while updating product review summary");
-    }
+
+        return result;
+    });
 };
 
-export { upsertProductReview, upsertProductReviewSummary };
+export { upsertProductReviewAndSummary };
