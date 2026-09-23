@@ -4,8 +4,13 @@ import { createOrUpdateSellerReviewValidator } from "./validator.js";
 import { validate } from "#middlewares/validate.middleware.js";
 import { requireAuth } from "#middlewares/auth.middleware.js";
 
-const router = express();
+const router = express.Router();
 
-router.post("/", requireAuth, createOrUpdateSellerReviewValidator, validate, createOrUpdateSellerReview);
+router.route("/").post(
+    requireAuth, 
+    createOrUpdateSellerReviewValidator, 
+    validate, 
+    createOrUpdateSellerReview
+);
 
 export default router;

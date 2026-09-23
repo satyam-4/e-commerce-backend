@@ -11,7 +11,10 @@ export const createOrUpdateSellerReviewValidator = [
         .toFloat(),
 
     body("review")
-        .notEmpty().withMessage("Review text is required").bail()
+        .optional({ nullable: true })
+        .trim()
+        .customSanitizer((value) => (value === "" ? null : value))
+        .optional({ nullable: true })
         .isString().withMessage("Review must be a string").bail()
-        .isLength({ min: 10, max: 1000 }).withMessage("Review must be between 10 and 1000 characters long").bail(),
+        .isLength({ max: 1000 }).withMessage("Review must be at most 1000 characters long").bail(),
 ];
