@@ -12,6 +12,8 @@ export const SESSION_COOKIE_OPTIONS = {
     sameSite: "lax"
 };
 
+const DUMMY_HASH = await encryptPassword("dummy-password-for-timing");
+
 const signupUser = async (req, res) => {
     const { fullName, email, password, phone, address } = req.body;
     const userExists = await checkUserExistence(email, phone);
@@ -38,18 +40,15 @@ const signinUser = async (req, res) => {
     const ipAddress = req.ip;
     const userAgent = req.headers['user-agent'];
 
-    if (!user) {
-        throw new AppError(404, "User does not exist");
-    } 
-
-    const hashedPassword = user.password;
+    const hashToCheck = user ? user.password : DUMMY_HASH;
+    const passwordOk = verifyPassword(password, hashToCheck);
     
-    if (!(await verifyPassword(password, hashedPassword))) {
-        throw new AppError(400, "Incorrect password");
+    if (!user || !passwordOk) {
+        throw new AppError(401, "Invalid email or password");
     }
 
-    const rawToken = await generateSessionToken();
-    const hashedToken = await hashToken(rawToken);
+    const rawToken = generateSessionToken();
+    const hashedToken = hashToken(rawToken);
 
     const now = new Date();
     const expiresAt = new Date(now.getTime() + env.SESSION_MAX_AGE);
@@ -59,9 +58,9 @@ const signinUser = async (req, res) => {
 
     return res 
     .status(200)
-    .cookie(SESSION_COOKIE_NAME, hashedToken, {
+    .cookie(SESSION_COOKIE_NAME, rawToken, {
         ...SESSION_COOKIE_OPTIONS,
-        maxAge: env.SESSION_ABSOLUTE_MAX_AGE
+        maxAge: env.SESSION_MAX_AGE
     })
     .json({
         success: true,
