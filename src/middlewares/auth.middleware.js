@@ -2,15 +2,17 @@ import { AppError } from "#utils/AppError.js";
 import { destroySessionToken, getSessionToken, getUserByEmail, getUserById, refreshSessionExpiry } from "#modules/auth/repository.js";
 import { SESSION_COOKIE_OPTIONS, SESSION_COOKIE_NAME } from "#modules/auth/controller.js";
 import { env } from "#config/env.js";
+import { hashToken } from "#modules/auth/service.js";
 
 export const requireAuth = async (req, res, next) => {
-    const sessionToken = req.cookies?.[SESSION_COOKIE_NAME];
+    const rawToken = req.cookies?.[SESSION_COOKIE_NAME];
 
-    if (!sessionToken) {
+    if (!rawToken || typeof rawToken !== "string") {
         throw new AppError(401, "Unauthorized request");
     }
-    
-    const session = await getSessionToken(sessionToken);
+
+    const hashedToken = hashToken(rawToken);
+    const session = await getSessionToken(hashedToken);
 
     if (!session) {
         res.clearCookie(SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS);
@@ -18,13 +20,7 @@ export const requireAuth = async (req, res, next) => {
     }
 
     const now = new Date();
-    if (session.absoluteExp && (now > session.absoluteExp)) {
-        await destroySessionToken(sessionToken);
-        res.clearCookie(SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS);
-        throw new AppError(401, "Session expired");
-    }
-
-    if (session.expiresAt && (now > session.expiresAt)) {
+    if (now > session.absoluteExp || now > session.expiresAt) {
         await destroySessionToken(sessionToken);
         res.clearCookie(SESSION_COOKIE_NAME, SESSION_COOKIE_OPTIONS);
         throw new AppError(401, "Session expired");
