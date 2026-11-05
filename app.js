@@ -22,6 +22,7 @@ app.use(cors({
     origin: env.CORS_ORIGINS,
     credentials: true
 }));
+app.set("trust proxy", 1);
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
