@@ -70,10 +70,13 @@ const destroySessionToken = async (sessionToken) => {
     });
 }
 
-const refreshSessionExpiry = async (sessionToken, expiresAt) => {
-    await prisma.session.update({
-        where: { sessionToken },
-        data: { expiresAt }
+const refreshSessionExpiry = async (hashedToken, newExpiresAt) => {
+    await prisma.session.updateMany({
+        where: { 
+            sessionToken: hashedToken,
+            absoluteExp: { gt: new Date() },
+        },
+        data: { expiresAt: newExpiresAt }
     });
 }
 
