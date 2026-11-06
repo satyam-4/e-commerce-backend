@@ -1,5 +1,5 @@
 import { checkUserExistence, createNewUser, destroySessionToken, getUserByEmail, storeSessionToken } from "./repository.js";
-import { encryptPassword, generateSessionToken, hashToken, verifyPassword } from "./service.js";
+import { encryptPassword, generateSessionToken, hashToken, setSessionCookie, verifyPassword } from "./service.js";
 import { AppError } from "#utils/AppError.js";
 import { sanitizeUser } from "./serializer.js";
 import { env } from "#config/env.js";
@@ -56,12 +56,9 @@ const signinUser = async (req, res) => {
 
     await storeSessionToken(user.id, hashedToken, ipAddress, userAgent, expiresAt, absoluteExp);
 
+    setSessionCookie(res, rawToken, absoluteExp);
     return res 
     .status(200)
-    .cookie(SESSION_COOKIE_NAME, rawToken, {
-        ...SESSION_COOKIE_OPTIONS,
-        maxAge: env.SESSION_MAX_AGE
-    })
     .json({
         success: true,
         message: "User logged in successfully",
