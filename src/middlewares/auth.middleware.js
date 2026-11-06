@@ -26,8 +26,21 @@ export const requireAuth = async (req, res, next) => {
         throw new AppError(401, "Session expired");
     }
 
-    const newExpiresAt = new Date(Date.now() + env.SESSION_MAX_AGE);
-    await refreshSessionExpiry(sessionToken, newExpiresAt);
+    const idleMs = env.SESSION_MAX_AGE;
+    const timeLeft = session.expiresAt.getTime() - now.getTime();
+
+    if (timeLeft < idleMs / 2) {
+        const newExpiresAt = new Date(
+            Math.min(now.getTime() + idleMs, session.absoluteExp.getTime())
+        );
+        const result = await refreshSessionExpiry(hashedToken, newExpiresAt);
+        
+        if (result.count === 0) {
+            rejectSession(res, "Session expired");
+        }
+        
+        setSessionCookie(res, rawToken, session.absoluteExp);
+    }
 
     const user = await getUserById(session.userId);
     req.user = user;
